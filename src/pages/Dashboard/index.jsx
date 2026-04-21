@@ -84,6 +84,30 @@ export default function Dashboard() {
     }, 2000);
   }
 
+  async function sendConsoleLog(message) {
+    const statusRef = doc(db, 'server', 'status');
+    const currentLogs = serverData?.consoleLogs || [];
+    await updateDoc(statusRef, {
+      consoleLogs: [...currentLogs, message],
+    });
+  }
+
+  async function handleSaveWorld() {
+    const now = new Date().toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    await sendConsoleLog(`[INFO] Saving chunks for level 'world'`);
+    setTimeout(() => sendConsoleLog(`[INFO] World saved at ${now}`), 1500);
+  }
+
+  async function handleClearCache() {
+    await sendConsoleLog(`[INFO] Clearing server cache...`);
+    setTimeout(() => sendConsoleLog(`[INFO] Cache cleared successfully`), 1000);
+  }
+
+  async function handleViewLogs() {
+    const count = (serverData?.consoleLogs || []).length;
+    await sendConsoleLog(`[INFO] Log viewer opened — ${count} entries total`);
+  }
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
@@ -202,9 +226,9 @@ export default function Dashboard() {
                   </Button>
                 </div>
                 <div className="d-flex flex-wrap gap-2">
-                  <Button variant="outline-secondary" size="sm">Зберегти світ</Button>
-                  <Button variant="outline-secondary" size="sm">Очистити кеш</Button>
-                  <Button variant="outline-secondary" size="sm">Переглянути логи</Button>
+                  <Button variant="outline-secondary" size="sm" disabled={!isOnline} onClick={handleSaveWorld}>Зберегти світ</Button>
+                  <Button variant="outline-secondary" size="sm" disabled={!isOnline} onClick={handleClearCache}>Очистити кеш</Button>
+                  <Button variant="outline-secondary" size="sm" onClick={handleViewLogs}>Переглянути логи</Button>
                 </div>
               </Card.Body>
             </Card>
