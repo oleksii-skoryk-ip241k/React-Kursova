@@ -1,0 +1,35 @@
+.files-breadcrumb .breadcrumb-item {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.files-breadcrumb .breadcrumb-item:not(.active):hover {
+  color: #1BA1E2;
+  text-decoration: underline;
+}
+
+.files-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  font-weight: 700;
+  border-top: none;
+}
+
+.files-table td {
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+.folder-row {
+  cursor: pointer;
+}
+
+.folder-row:hover td {
+  background-color: #f0f7ff;
+}
+
+.file-icon {
+  margin-right: 8px;
+}

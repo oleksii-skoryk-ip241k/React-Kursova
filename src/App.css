@@ -1,7 +1,25 @@
 .App {
-  text-align: center;
+  text-align: left;
   display: flex;
   justify-content: flex-start;
+  min-height: 100vh;
+  background-color: #f4f6f8;
+}
+
+.page-wrapper {
+  flex: 1;
+  min-width: 0;
+  background-color: #f4f6f8;
+}
+
+.page-content {
+  min-height: 100vh;
+}
+
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a2e;
 }
 
 .hamburger-btn {

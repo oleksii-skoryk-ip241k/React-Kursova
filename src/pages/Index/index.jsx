@@ -1,10 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
-import { Container, Row, Col } from 'react-bootstrap';
-
-export default function Index(redirect = false) {
-  return (
-    <></>
-  );
+export default function Index() {
+  return <Navigate to="/dashboard" replace />;
 }

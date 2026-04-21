@@ -1,8 +1,12 @@
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Sidebar from './components/Sidebar';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
 
 import Index from './pages/Index';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Files from './pages/Files';
 import Configuration from './pages/Configuration';
@@ -13,20 +17,30 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="App">
-        <Sidebar />
+    <AuthProvider>
+      <BrowserRouter>
         <Routes>
-          <Route index element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/files" element={<Files />} />
-          <Route path="/configuration" element={<Configuration />} />
-          <Route path="/plugins" element={<Plugins />} />
-          <Route path="/backup" element={<Backup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/*" element={
+            <div className="App">
+              <Sidebar />
+              <div className="page-wrapper">
+                <Routes>
+                  <Route index element={<ProtectedRoute><Index /></ProtectedRoute>} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/files" element={<ProtectedRoute><Files /></ProtectedRoute>} />
+                  <Route path="/configuration" element={<ProtectedRoute><Configuration /></ProtectedRoute>} />
+                  <Route path="/plugins" element={<ProtectedRoute><Plugins /></ProtectedRoute>} />
+                  <Route path="/backup" element={<ProtectedRoute><Backup /></ProtectedRoute>} />
+                </Routes>
+              </div>
+            </div>
+          } />
         </Routes>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
 export default App;
+
