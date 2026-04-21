@@ -1,0 +1,26 @@
+.side-link {
+    color: white;
+    font-size: 32px;
+    font-weight: 300;
+    background-color: #1BA1E2;
+    border: none;
+    text-decoration: none;
+    padding: 5px 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    
+    user-select: none;
+
+    transition: all 0.2s ease-in-out;
+}
+
+.side-link:hover {
+    background-color: #0D8DC9;
+}
+
+.selected {
+    border-right: white 10px solid;
+}

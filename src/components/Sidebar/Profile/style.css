@@ -1,0 +1,38 @@
+.profile {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* Розштовхує блоки Username та Logout по краях */
+    justify-content: space-between; 
+    
+    width: 100%;
+    padding: 15px 20px;
+    background-color: rgba(0, 0, 0, 0.15); /* Темніша підкладка як на макеті */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-displays {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px; /* Відступ між аватаром і текстом */
+}
+
+.profile-username {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0; /* Прибираємо дефолтні відступи <p> */
+    white-space: nowrap;
+}
+
+.profile-logout {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.profile-logout:hover {
+    transform: scale(1.1); /* Ефект при наведенні */
+}
