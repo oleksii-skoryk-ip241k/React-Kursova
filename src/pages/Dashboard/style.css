@@ -84,3 +84,7 @@
 .console-line.warn {
   color: #fbbf24;
 }
+
+.console-line.error {
+  color: #f87171;
+}

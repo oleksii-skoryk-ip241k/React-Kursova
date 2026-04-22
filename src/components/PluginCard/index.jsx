@@ -25,7 +25,7 @@ export default function PluginCard({ plugin, onToggle, onDelete }) {
             variant="outline-danger"
             size="sm"
             className="py-0 px-2"
-            onClick={() => onDelete(plugin.id)}
+            onClick={() => window.confirm(`Видалити плагін "${plugin.name}"?`) && onDelete(plugin.id)}
           >
             Видалити
           </Button>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer } from 'react';
+import { useState, useEffect, useReducer, useRef } from 'react';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Container, Row, Col, Card, Button, Badge, ProgressBar } from 'react-bootstrap';
@@ -18,11 +18,18 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
   const [, forceUpdate] = useReducer(x => x + 1, 0);
+  const consoleRef = useRef(null);
 
   useEffect(() => {
     const interval = setInterval(forceUpdate, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (consoleRef.current) {
+      consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+    }
+  }, [serverData?.consoleLogs]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(db, 'server', 'status'), (snap) => {
@@ -32,7 +39,22 @@ export default function Dashboard() {
     return unsubscribe;
   }, []);
 
+  async function kickPlayer(playerName) {
+    const statusRef = doc(db, 'server', 'status');
+    const now = new Date().toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const currentPlayers = serverData?.players || [];
+    const currentLogs = serverData?.consoleLogs || [];
+    await updateDoc(statusRef, {
+      players: currentPlayers.filter(p => p.name !== playerName),
+      consoleLogs: [...currentLogs, `[INFO] Kicked player ${playerName} at ${now}`].slice(-50),
+    });
+  }
+
   async function simulateAction(action) {
+    if (action === 'stop' || action === 'restart') {
+      const label = action === 'stop' ? 'зупинити' : 'перезапустити';
+      if (!window.confirm(`Ви впевнені, що хочете ${label} сервер?`)) return;
+    }
     setActionLoading(action);
     const statusRef = doc(db, 'server', 'status');
     const currentLogs = serverData?.consoleLogs || [];
@@ -47,7 +69,7 @@ export default function Dashboard() {
             `[INFO] Stopping the server...`,
             `[INFO] Kicked all players from the server`,
             `[INFO] Server stopped at ${now}`,
-          ],
+          ].slice(-50),
         });
         setActionLoading(null);
       } else if (action === 'start') {
@@ -56,7 +78,7 @@ export default function Dashboard() {
           consoleLogs: [...currentLogs,
             `[INFO] Starting server...`,
             `[INFO] Done (2.341s)! For help, type "help"`,
-          ],
+          ].slice(-50),
         });
         setActionLoading(null);
       } else if (action === 'restart') {
@@ -66,7 +88,7 @@ export default function Dashboard() {
           consoleLogs: [...currentLogs,
             `[INFO] Restarting server...`,
             `[INFO] Kicked all players from the server`,
-          ],
+          ].slice(-50),
         });
         setTimeout(async () => {
           await updateDoc(statusRef, {
@@ -76,7 +98,7 @@ export default function Dashboard() {
               `[INFO] Kicked all players from the server`,
               `[INFO] Server restarted successfully`,
               `[INFO] Done (2.341s)! For help, type "help"`,
-            ],
+            ].slice(-50),
           });
           setActionLoading(null);
         }, 2000);
@@ -88,7 +110,7 @@ export default function Dashboard() {
     const statusRef = doc(db, 'server', 'status');
     const currentLogs = serverData?.consoleLogs || [];
     await updateDoc(statusRef, {
-      consoleLogs: [...currentLogs, message],
+      consoleLogs: [...currentLogs, message].slice(-50),
     });
   }
 
@@ -247,7 +269,7 @@ export default function Dashboard() {
                         <div className="player-avatar">{p.name[0]}</div>
                         <div className="player-name">{p.name}</div>
                         <div className="player-time text-muted">{formatTimeOnline(p.joinedAt)}</div>
-                        <Button variant="outline-danger" size="sm" className="py-0 px-2">Кік</Button>
+                        <Button variant="outline-danger" size="sm" className="py-0 px-2" onClick={() => kickPlayer(p.name)}>Кік</Button>
                       </div>
                     ))}
                   </div>
@@ -262,9 +284,9 @@ export default function Dashboard() {
             <Card className="shadow-sm border-0 rounded-3">
               <Card.Body>
                 <h6 className="section-label mb-3">Консоль (останні записи)</h6>
-                <div className="console-box">
+                <div className="console-box" ref={consoleRef}>
                   {consoleLogs.map((line, i) => (
-                    <div key={i} className={`console-line ${line.includes('[WARN]') ? 'warn' : ''}`}>
+                    <div key={i} className={`console-line ${line.includes('[WARN]') ? 'warn' : line.includes('[ERROR]') ? 'error' : ''}`}>
                       {line}
                     </div>
                   ))}
