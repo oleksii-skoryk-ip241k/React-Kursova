@@ -1,0 +1,17 @@
+.plugins-search {
+  max-width: 400px;
+}
+
+.plugins-search .input-group-text {
+  background-color: white;
+  border-right: none;
+}
+
+.plugins-search .form-control {
+  border-left: none;
+}
+
+.plugins-search .form-control:focus {
+  box-shadow: none;
+  border-color: #ced4da;
+}
