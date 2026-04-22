@@ -1,0 +1,31 @@
+.config-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.config-tabs {
+  border-bottom: 0;
+}
+
+.config-tabs .nav-link {
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 8px 16px;
+  margin-bottom: -1px;
+}
+
+.config-tabs .nav-link.active {
+  color: #1BA1E2;
+  border-bottom-color: #1BA1E2;
+  background: none;
+}
+
+.config-tabs .nav-link:hover:not(.active) {
+  color: #1a1a2e;
+  background: none;
+}
