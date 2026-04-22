@@ -1,0 +1,23 @@
+.backup-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  font-weight: 700;
+  border-top: none;
+}
+
+.backup-table td {
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+.backup-icon {
+  margin-right: 8px;
+}
+
+.backup-name {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #374151;
+}
