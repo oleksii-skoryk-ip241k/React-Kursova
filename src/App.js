@@ -12,12 +12,12 @@ import Configuration from './pages/Configuration';
 import Plugins from './pages/Plugins';
 import Backup from './pages/Backup';
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/*" element={
@@ -36,7 +36,7 @@ function App() {
             </div>
           } />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </AuthProvider>
   );
 }
