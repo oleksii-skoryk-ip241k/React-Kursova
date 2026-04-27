@@ -35,13 +35,21 @@ export default function Backup() {
         const now = new Date();
         const pad = n => String(n).padStart(2, '0');
         const name = `backup-${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}-manual`;
+        const dateStr = `${pad(now.getDate())}.${pad(now.getMonth()+1)}.${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
         await addDoc(collection(db, 'backups'), {
           name,
-          date: `${pad(now.getDate())}.${pad(now.getMonth()+1)}.${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`,
+          date: dateStr,
           size: '2.35 GB',
           type: 'manual',
           status: 'ok',
           createdAt: Date.now(),
+        });
+        await addDoc(collection(db, 'files'), {
+          path: '/backups',
+          name: name + '.zip',
+          type: 'file',
+          size: '2.35 GB',
+          modified: `${pad(now.getDate())}.${pad(now.getMonth()+1)}.${now.getFullYear()}`,
         });
         setCreating(false);
         setProgress(0);

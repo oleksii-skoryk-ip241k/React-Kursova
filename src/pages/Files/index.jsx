@@ -1,5 +1,10 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import {
+  collection, onSnapshot, addDoc, deleteDoc, updateDoc,
+  doc, getDocs, query, where, writeBatch,
+} from 'firebase/firestore';
+import { db } from '../../firebase';
 import { Container, Card, Table, Button, Breadcrumb, Badge, Form } from 'react-bootstrap';
 import './style.css';
 
@@ -48,17 +53,52 @@ function todayStr() {
 }
 
 export default function Files() {
-  const [fileTree, setFileTree] = useState(INITIAL_FILE_TREE);
+  const [fileTree, setFileTree] = useState({});
+  const [loading, setLoading] = useState(true);
   const [path, setPath] = useState('/');
   const [renamingName, setRenamingName] = useState(null);
   const [renameValue, setRenameValue] = useState('');
+
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, 'files'), (snap) => {
+      if (snap.empty) {
+        seedFiles();
+        return;
+      }
+      const tree = {};
+      snap.docs.forEach(d => {
+        const data = { id: d.id, ...d.data() };
+        if (!tree[data.path]) tree[data.path] = [];
+        tree[data.path].push(data);
+      });
+      Object.keys(tree).forEach(p => {
+        tree[p].sort((a, b) => {
+          if (a.type !== b.type) return a.type === 'folder' ? -1 : 1;
+          return a.name.localeCompare(b.name);
+        });
+      });
+      setFileTree(tree);
+      setLoading(false);
+    });
+    return unsub;
+  }, []);
+
+  async function seedFiles() {
+    const batch = writeBatch(db);
+    for (const [p, entries] of Object.entries(INITIAL_FILE_TREE)) {
+      for (const entry of entries) {
+        const ref = doc(collection(db, 'files'));
+        batch.set(ref, { ...entry, path: p });
+      }
+    }
+    await batch.commit();
+  }
 
   const segments = path === '/' ? [] : path.split('/').filter(Boolean);
   const entries = fileTree[path] || [];
 
   function navigate(folder) {
     const newPath = path === '/' ? `/${folder}` : `${path}/${folder}`;
-    setFileTree(prev => ({ ...prev, [newPath]: prev[newPath] ?? [] }));
     setPath(newPath);
   }
 
@@ -67,33 +107,39 @@ export default function Files() {
     setPath('/' + segments.slice(0, index + 1).join('/'));
   }
 
-  function handleDelete(name) {
+  async function handleDelete(name) {
     if (!window.confirm(`Видалити "${name}"?`)) return;
-    setFileTree(prev => ({ ...prev, [path]: prev[path].filter(e => e.name !== name) }));
+    const item = entries.find(e => e.name === name);
+    if (!item) return;
+    await deleteDoc(doc(db, 'files', item.id));
+    if (item.type === 'folder') {
+      const folderPath = path === '/' ? `/${name}` : `${path}/${name}`;
+      const q = query(
+        collection(db, 'files'),
+        where('path', '>=', folderPath),
+        where('path', '<=', folderPath + '\uf8ff'),
+      );
+      const childSnap = await getDocs(q);
+      const batch = writeBatch(db);
+      childSnap.docs.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+    }
   }
 
-  function handleCreateFolder() {
+  async function handleCreateFolder() {
     const name = window.prompt('Назва нової папки:');
     if (!name?.trim()) return;
     const trimmed = name.trim();
     if (entries.some(e => e.name === trimmed)) { alert('Вже існує!'); return; }
-    const newPath = path === '/' ? `/${trimmed}` : `${path}/${trimmed}`;
-    setFileTree(prev => ({
-      ...prev,
-      [path]: [...prev[path], { name: trimmed, type: 'folder' }],
-      [newPath]: [],
-    }));
+    await addDoc(collection(db, 'files'), { path, name: trimmed, type: 'folder' });
   }
 
-  function handleCreateFile() {
+  async function handleCreateFile() {
     const name = window.prompt('Назва нового файлу:');
     if (!name?.trim()) return;
     const trimmed = name.trim();
     if (entries.some(e => e.name === trimmed)) { alert('Вже існує!'); return; }
-    setFileTree(prev => ({
-      ...prev,
-      [path]: [...prev[path], { name: trimmed, type: 'file', size: '0 KB', modified: todayStr() }],
-    }));
+    await addDoc(collection(db, 'files'), { path, name: trimmed, type: 'file', size: '0 KB', modified: todayStr() });
   }
 
   function startRename(name) {
@@ -101,25 +147,30 @@ export default function Files() {
     setRenameValue(name);
   }
 
-  function commitRename(oldName) {
+  async function commitRename(oldName) {
     const newName = renameValue.trim();
     setRenamingName(null);
     if (!newName || newName === oldName) return;
     if (entries.some(e => e.name === newName)) { alert('Вже існує!'); return; }
     const item = entries.find(e => e.name === oldName);
-    setFileTree(prev => {
-      const updated = prev[path].map(e => e.name === oldName ? { ...e, name: newName } : e);
-      const next = { ...prev, [path]: updated };
-      if (item?.type === 'folder') {
-        const oldKey = path === '/' ? `/${oldName}` : `${path}/${oldName}`;
-        const newKey = path === '/' ? `/${newName}` : `${path}/${newName}`;
-        if (prev[oldKey] !== undefined) {
-          next[newKey] = prev[oldKey];
-          delete next[oldKey];
-        }
-      }
-      return next;
-    });
+    if (!item) return;
+    await updateDoc(doc(db, 'files', item.id), { name: newName });
+    if (item.type === 'folder') {
+      const oldKey = path === '/' ? `/${oldName}` : `${path}/${oldName}`;
+      const newKey = path === '/' ? `/${newName}` : `${path}/${newName}`;
+      const q = query(
+        collection(db, 'files'),
+        where('path', '>=', oldKey),
+        where('path', '<=', oldKey + '\uf8ff'),
+      );
+      const childSnap = await getDocs(q);
+      const batch = writeBatch(db);
+      childSnap.docs.forEach(d => {
+        const currentPath = d.data().path;
+        batch.update(d.ref, { path: newKey + currentPath.slice(oldKey.length) });
+      });
+      await batch.commit();
+    }
   }
 
   return (
@@ -138,6 +189,11 @@ export default function Files() {
 
         <Card className="shadow-sm border-0 rounded-3">
           <Card.Body>
+            {loading ? (
+              <div className="d-flex justify-content-center py-4">
+                <div className="spinner-border text-primary" role="status" />
+              </div>
+            ) : (<>
             <Breadcrumb className="mb-3 files-breadcrumb">
               <Breadcrumb.Item onClick={() => setPath('/')} active={path === '/'}>
                 🖥️ Сервер
@@ -212,6 +268,7 @@ export default function Files() {
                 ))}
               </tbody>
             </Table>
+            </>)}
           </Card.Body>
         </Card>
       </Container>
