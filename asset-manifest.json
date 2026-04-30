@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/React-Kursova/static/css/main.f4b41275.css",
+    "main.js": "/React-Kursova/static/js/main.b7f6ca21.js",
+    "static/js/453.e46c27d1.chunk.js": "/React-Kursova/static/js/453.e46c27d1.chunk.js",
+    "index.html": "/React-Kursova/index.html",
+    "main.f4b41275.css.map": "/React-Kursova/static/css/main.f4b41275.css.map",
+    "main.b7f6ca21.js.map": "/React-Kursova/static/js/main.b7f6ca21.js.map",
+    "453.e46c27d1.chunk.js.map": "/React-Kursova/static/js/453.e46c27d1.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f4b41275.css",
+    "static/js/main.b7f6ca21.js"
+  ]
+}
