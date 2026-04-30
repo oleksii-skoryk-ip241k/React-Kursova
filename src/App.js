@@ -11,6 +11,7 @@ import Files from './pages/Files';
 import Configuration from './pages/Configuration';
 import Plugins from './pages/Plugins';
 import Backup from './pages/Backup';
+import Admin from './pages/Admin';
 
 import { HashRouter, Routes, Route } from 'react-router-dom';
 
@@ -31,6 +32,7 @@ function App() {
                   <Route path="/configuration" element={<ProtectedRoute><Configuration /></ProtectedRoute>} />
                   <Route path="/plugins" element={<ProtectedRoute><Plugins /></ProtectedRoute>} />
                   <Route path="/backup" element={<ProtectedRoute><Backup /></ProtectedRoute>} />
+                  <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                 </Routes>
               </div>
             </div>

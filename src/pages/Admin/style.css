@@ -1,0 +1,43 @@
+.admin-badge-label {
+  display: inline-block;
+  background: #dc2626;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.admin-field-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.admin-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.admin-player-row:last-child {
+  border-bottom: none;
+}
+
+.admin-console {
+  max-height: 260px;
+  overflow-y: auto;
+}

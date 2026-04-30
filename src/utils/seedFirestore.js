@@ -9,7 +9,7 @@ const INITIAL_SERVER = {
   ram: 2.4,
   ramTotal: 8,
   cpu: 18,
-  uptime: '3д 14г 22хв',
+  startedAt: Date.now() - 1000 * 60 * 60 * 86,
   players: [
     { name: 'Steve', joinedAt: Date.now() - 1000 * 60 * 134 },
     { name: 'Alex', joinedAt: Date.now() - 1000 * 60 * 108 },
