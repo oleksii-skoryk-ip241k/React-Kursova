@@ -48,7 +48,7 @@ export default function Login() {
         <Card className="login-card shadow-lg">
           <Card.Body className="p-5">
             <div className="text-center mb-4">
-              <img src="/logo512.png" alt="logo" width={72} height={72} className="mb-3" />
+              <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" width={72} height={72} className="mb-3" />
               <h3 className="fw-bold login-title">Minecraft Panel</h3>
               <p className="text-muted mb-0">Панель управління сервером</p>
             </div>
@@ -95,7 +95,7 @@ export default function Login() {
                 {googleLoading ? (
                   <><span className="spinner-border spinner-border-sm me-2" />Зачекайте...</>
                 ) : (
-                  <><img src="/icons/google.svg" alt="Google" width={20} height={20} className="me-2" />Увійти через Google</>
+                  <><img src={`${process.env.PUBLIC_URL}/icons/google.svg`} alt="Google" width={20} height={20} className="me-2" />Увійти через Google</>
                 )}
               </Button>
             </Form>

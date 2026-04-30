@@ -29,7 +29,7 @@ export default function Sidebar() {
           &times;
         </button>
         <div className="sidebar-logo">
-          <img src='logo512.png' alt='logo' width={64} height={64} />
+          <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt='logo' width={64} height={64} />
         </div>
         <hr className="border-white border-1 opacity-50 my-3" />
         <div className='sidebar-list'>

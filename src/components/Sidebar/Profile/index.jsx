@@ -27,7 +27,7 @@ export default function Profile() {
         </div>
       </div>
       <button className='profile-logout' onClick={handleLogout} title="Вийти">
-        <img src="/icons/logout.png" alt="Logout" width={36} height={36} />
+        <img src={`${process.env.PUBLIC_URL}/icons/logout.png`} alt="Logout" width={36} height={36} />
       </button>
     </div>
   );
